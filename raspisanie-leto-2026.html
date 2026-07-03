@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Расписание летних курсов · Умникс · лето 2026</title>
+<style>
+  :root{
+    --indigo:#283287; --indigo-2:#3d4aab; --lime:#D9E73C; --lime-2:#eaf07a;
+    --ink:#0e1230; --ink-2:#3d3f5c; --muted:#7a7d95; --line:#e6e6ee; --bg:#f6f6fb; --card:#ffffff;
+    --m:#2a78d6; --m-bg:#e6f1fb; /* математика */
+    --r:#d03b3b; --r-bg:#fceaea; /* русский */
+    --f:#199e70; --f-bg:#e1f5ee; /* физика */
+    --i:#534AB7; --i-bg:#eeedfe; /* информатика */
+    --p:#c98500; --p-bg:#faeeda; /* пересдача — акцент внутри предмета */
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e9eaf3; --ink-2:#bdbfd4; --muted:#8b8ea5; --line:#2c2e42; --bg:#111226; --card:#1a1c33;
+      --m-bg:#0c2a44; --r-bg:#3a1414; --f-bg:#0a3628; --i-bg:#26215c; --p-bg:#3b2708;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.5;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header{background:var(--indigo);color:#fff;padding:32px 0 26px;border-bottom:4px solid var(--lime)}
+  header h1{margin:0;font-size:26px;font-weight:600;letter-spacing:-0.01em}
+  header p{margin:6px 0 0;color:#c9cdf0;font-size:14.5px}
+  .brand-mark{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--lime);
+    text-transform:uppercase;letter-spacing:0.14em;margin-bottom:10px;font-weight:500}
+  .brand-mark::before{content:"";width:22px;height:2px;background:var(--lime);display:inline-block}
+
+  /* KPI row */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 8px}
+  .kpi{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:14px 16px}
+  .kpi .l{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+  .kpi .v{font-size:26px;font-weight:600;line-height:1.15;margin-top:4px}
+  .kpi .s{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+
+  /* Sections */
+  section{margin:34px 0}
+  h2{font-size:19px;font-weight:600;margin:0 0 14px;letter-spacing:-0.005em}
+  h2 .hint{font-size:13px;color:var(--muted);font-weight:400;margin-left:8px}
+
+  /* Filter chips */
+  .filter{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+  .chip{border:0.5px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:999px;padding:7px 14px;font-size:13.5px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;font-family:inherit}
+  .chip:hover{border-color:var(--ink-2)}
+  .chip .d{width:9px;height:9px;border-radius:50%}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .chip.active .d{outline:2px solid rgba(255,255,255,0.35)}
+
+  /* Weekly template */
+  .week{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:6px 4px 10px;overflow-x:auto}
+  .week table{width:100%;border-collapse:collapse;min-width:820px;font-size:13.5px}
+  .week th{font-weight:500;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:0.08em;
+    text-align:left;padding:10px 10px 8px;border-bottom:0.5px solid var(--line);background:transparent}
+  .week td{vertical-align:top;padding:6px;border-right:0.5px solid var(--line);width:12.5%}
+  .week td:last-child{border-right:0}
+  .week th:first-child, .week td:first-child{width:78px;color:var(--muted);font-variant-numeric:tabular-nums;padding-left:14px}
+  .week .slot{display:block;padding:7px 9px;border-radius:8px;margin-bottom:5px;font-size:12.5px;line-height:1.3}
+  .week .slot b{display:block;font-weight:500;font-size:12.5px}
+  .week .slot small{display:block;color:var(--ink-2);font-size:11.5px;margin-top:1px;font-variant-numeric:tabular-nums}
+  .slot.m{background:var(--m-bg);color:var(--m);border-left:3px solid var(--m)}
+  .slot.r{background:var(--r-bg);color:var(--r);border-left:3px solid var(--r)}
+  .slot.f{background:var(--f-bg);color:var(--f);border-left:3px solid var(--f)}
+  .slot.i{background:var(--i-bg);color:var(--i);border-left:3px solid var(--i)}
+  .slot.per{border-left-style:dashed}
+  .par{display:flex;gap:4px;flex-direction:column}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);margin:12px 4px 0;padding-left:14px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend .sw{width:14px;height:10px;border-radius:3px;border-left:3px solid;display:inline-block}
+  .legend .sw.per{border-left-style:dashed}
+  .note{font-size:12.5px;color:var(--muted);margin:12px 14px 0;padding:10px 12px;border-left:2px solid var(--line);background:transparent}
+
+  /* Course grid */
+  .courses{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+  .course{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:16px 18px;
+    display:flex;flex-direction:column;transition:opacity 0.15s}
+  .course[hidden-by-filter]{display:none}
+  .course .top{display:flex;align-items:center;gap:9px;margin-bottom:2px}
+  .course .subj{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+  .course h3{margin:2px 0 0;font-size:16px;font-weight:600}
+  .course .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .course .meta span{font-size:12px;background:var(--bg);color:var(--ink-2);padding:3px 9px;border-radius:999px;
+    font-variant-numeric:tabular-nums}
+  .course .dot{width:11px;height:11px;border-radius:50%}
+  .course .toggle{margin-top:12px;border:0;background:transparent;color:var(--ink-2);
+    font-size:13px;cursor:pointer;padding:6px 0 0;text-align:left;font-family:inherit;
+    border-top:0.5px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .course .toggle:hover{color:var(--ink)}
+  .course .toggle::after{content:"↓";opacity:0.5;font-size:11px}
+  .course.open .toggle::after{content:"↑"}
+  .lessons{display:none;margin-top:10px;font-size:13px}
+  .course.open .lessons{display:block}
+  .lessons .row{display:grid;grid-template-columns:22px 74px minmax(0,1fr);gap:8px;
+    padding:7px 0;border-top:0.5px solid var(--line);align-items:baseline}
+  .lessons .row:first-child{border-top:0}
+  .lessons .n{width:22px;height:22px;border-radius:50%;background:var(--bg);color:var(--ink-2);
+    font-size:11.5px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums;font-weight:500}
+  .lessons .dt{color:var(--ink-2);font-variant-numeric:tabular-nums;font-size:12.5px}
+  .lessons .dt em{font-style:normal;display:block;color:var(--muted);font-size:11.5px}
+  .lessons .tp{font-size:13px;line-height:1.4}
+  .lessons .tp em{font-style:normal;display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
+  /* Insights */
+  .insights{background:var(--card);border:0.5px solid var(--line);border-radius:12px;padding:18px 20px}
+  .insights h3{margin:0 0 10px;font-size:14px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+  .insights ul{margin:0;padding-left:0;list-style:none}
+  .insights li{padding:8px 0;border-top:0.5px solid var(--line);font-size:14px;line-height:1.55}
+  .insights li:first-child{border-top:0}
+  .insights li b{color:var(--indigo);font-weight:500}
+  @media (prefers-color-scheme: dark){ .insights li b{color:var(--lime)} }
+
+  footer{color:var(--muted);font-size:12.5px;padding:24px 0 32px;text-align:center}
+
+  @media (max-width:720px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    header h1{font-size:22px}
+    .wrap{padding:0 16px}
+  }
+  @media print{
+    body{background:#fff;color:#000}
+    .filter, .course .toggle{display:none}
+    .lessons{display:block}
+    header{color:#000;background:#fff;border-bottom:2px solid #000}
+    header p, .brand-mark{color:#000}
+    .course, .week, .insights, .kpi{border:1px solid #ccc;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand-mark">Умникс · планирование</div>
+    <h1>Расписание летних курсов</h1>
+    <p>Лето 2026 · 13 июля — 13 сентября · время указано по МСК (GMT+3)</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="kpis">
+    <div class="kpi"><div class="l">Предметов</div><div class="v">4</div><div class="s">математика, русский, физика, информатика</div></div>
+    <div class="kpi"><div class="l">Курсов</div><div class="v">12</div><div class="s">по 3 на предмет: ЛШ ОГЭ · ЛШ ЕГЭ · пересдача</div></div>
+    <div class="kpi"><div class="l">Уроков всего</div><div class="v">192</div><div class="s">16 уроков в каждом курсе</div></div>
+    <div class="kpi"><div class="l">Период</div><div class="v">9 недель</div><div class="s">старт математики и русского — 13.07, физики — 20.07</div></div>
+  </div>
+
+  <section>
+    <h2>Типовая учебная неделя <span class="hint">пн–вс, все повторяющиеся слоты сразу</span></h2>
+    <div class="filter" id="filter">
+      <button class="chip active" data-f="all"><span class="d" style="background:linear-gradient(135deg,var(--m) 0 25%,var(--r) 25% 50%,var(--f) 50% 75%,var(--i) 75% 100%)"></span>Все предметы</button>
+      <button class="chip" data-f="m"><span class="d" style="background:var(--m)"></span>Математика</button>
+      <button class="chip" data-f="r"><span class="d" style="background:var(--r)"></span>Русский</button>
+      <button class="chip" data-f="f"><span class="d" style="background:var(--f)"></span>Физика</button>
+      <button class="chip" data-f="i"><span class="d" style="background:var(--i)"></span>Информатика</button>
+    </div>
+
+    <div class="week">
+      <table>
+        <thead>
+          <tr><th>МСК</th><th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th><th>Пт</th><th>Сб</th><th>Вс</th></tr>
+        </thead>
+        <tbody id="grid"></tbody>
+      </table>
+      <div class="legend">
+        <span><span class="sw" style="border-color:var(--m);background:var(--m-bg)"></span>Математика</span>
+        <span><span class="sw" style="border-color:var(--r);background:var(--r-bg)"></span>Русский</span>
+        <span><span class="sw" style="border-color:var(--f);background:var(--f-bg)"></span>Физика</span>
+        <span><span class="sw" style="border-color:var(--i);background:var(--i-bg)"></span>Информатика</span>
+        <span><span class="sw per" style="border-color:var(--muted)"></span>Пересдача (пунктир)</span>
+      </div>
+      <div class="note">
+        Информатика — единственный предмет с плавающим расписанием: слоты «будни 18–19 МСК» и «воскресенье 13–15 МСК» держатся всё лето, но конкретные дни недели двигаются. Точные даты — в карточках курсов ниже.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Курсы <span class="hint">клик по карточке — раскрыть все 16 уроков</span></h2>
+    <div class="courses" id="courses"></div>
+  </section>
+
+  <section>
+    <div class="insights">
+      <h3>Выводы для отделов</h3>
+      <ul>
+        <li><b>Пиковая нагрузка — вторник и четверг, 11:00–15:45 МСК:</b> идут 5 параллельных потоков подряд (математика ЕГЭ + физика ОГЭ + три русских). Это единственные дни недели, где нужна полная команда одновременно.</li>
+        <li><b>Понедельник и среда легче:</b> математика и физика идут в парах 11:00 и 12:15, русского нет. Хорошее окно под методички, планёрки, проверку домашних.</li>
+        <li><b>Параллельные слоты 11:00 и 12:15 в пн/ср и вт/чт</b> — математика и физика намеренно поставлены на одно время, чтобы 9-классники ОГЭ и 11-классники ЕГЭ могли выбирать оба предмета без наложений. Требует двух преподавателей одновременно — учесть в назначениях.</li>
+        <li><b>Информатика вне общей сетки:</b> вечерние будни и воскресенья не пересекаются с матем/рус/физ. Плюс — не создаёт конфликтов; минус — расписание преподавателя нужно держать отдельно.</li>
+        <li><b>Физика стартует на неделю позже</b> (20.07 vs 13.07), заканчивает 10.09. Это добавляет 4 урока после «общего финиша» 3.09 — учесть при планировании расчёта ЗП и коммуникаций с родителями.</li>
+        <li><b>Пересдача ОГЭ по русскому</b> идёт в самом конце окна вт/чт (14:45–15:45). Проверить, что все преподаватели готовы к длинному дню и что зал/техника свободны.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<footer class="wrap">Умникс · внутренний документ для отделов методики, продукта и HR</footer>
+
+<script>
+/* ==================== ДАННЫЕ ==================== */
+
+// Повторяющиеся курсы: даты генерятся по (старт, дни недели)
+const REC = [
+  {id:'m-oge', s:'Математика', t:'ЛШ ОГЭ', c:'m', dow:[1,3], time:'11:00–12:00', start:'2026-07-13'},
+  {id:'m-ege', s:'Математика', t:'ЛШ ЕГЭ', c:'m', dow:[2,4], time:'11:00–12:00', start:'2026-07-14'},
+  {id:'m-per', s:'Математика', t:'Пересдача ОГЭ', c:'m', per:true, dow:[1,3], time:'12:15–13:15', start:'2026-07-13'},
+  {id:'r-ege', s:'Русский',    t:'ЛШ ЕГЭ', c:'r', dow:[2,4], time:'12:15–13:15', start:'2026-07-14'},
+  {id:'r-oge', s:'Русский',    t:'ЛШ ОГЭ', c:'r', dow:[2,4], time:'13:30–14:30', start:'2026-07-14'},
+  {id:'r-per', s:'Русский',    t:'Пересдача ОГЭ', c:'r', per:true, dow:[2,4], time:'14:45–15:45', start:'2026-07-14'},
+  {id:'f-ege', s:'Физика',     t:'ЛШ ЕГЭ', c:'f', dow:[1,3], time:'11:00–12:00', start:'2026-07-20'},
+  {id:'f-oge', s:'Физика',     t:'ЛШ ОГЭ', c:'f', dow:[2,4], time:'11:00–12:00', start:'2026-07-21'},
+  {id:'f-per', s:'Физика',     t:'Пересдача ОГЭ', c:'f', per:true, dow:[1,3], time:'12:15–13:15', start:'2026-07-20'},
+];
+
+// Информатика — конкретные даты и темы
+const INF = {
+  'i-per': {s:'Информатика', t:'Пересдача ОГЭ', c:'i', per:true, lessons:[
+    ['21.07','вт','18:00','Кодирование и декодирование данных'],
+    ['26.07','вс','13:00','Адресация сети'],
+    ['29.07','ср','18:00','Графы. Кратчайший путь'],
+    ['02.08','вс','13:00','Графы. Количество путей'],
+    ['05.08','ср','18:00','Вычисление объёма информации'],
+    ['09.08','вс','13:00','Анализ линейных алгоритмов'],
+    ['11.08','вт','18:00','Поиск информации в файлах'],
+    ['16.08','вс','13:00','Поиск файлов в файловой системе'],
+    ['19.08','ср','18:00','Создание презентации в LibreOffice'],
+    ['23.08','вс','13:00','Оформление презентации в LibreOffice'],
+    ['25.08','вт','18:00','Алгоритмизация в КуМире, ч. 1'],
+    ['30.08','вс','13:00','Алгоритмизация в КуМире, ч. 2'],
+    ['01.09','вт','18:00','Повторение и закрепление материала'],
+    ['06.09','вс','13:00','Решение варианта ОГЭ полностью'],
+    ['09.09','ср','18:00','Решение варианта ОГЭ полностью'],
+    ['13.09','вс','13:00','Решение варианта ОГЭ полностью'],
+  ]},
+  'i-oge': {s:'Информатика', t:'ЛШ ОГЭ', c:'i', lessons:[
+    ['23.07','чт','18:00','Логические игры и головоломки','построение истинных и ложных высказываний'],
+    ['26.07','вс','14:00','Введение в алгоритмическое мышление','блок-схемы и словесные алгоритмы'],
+    ['31.07','пт','18:00','Исполнители и системы команд','придумываем своего робота'],
+    ['02.08','вс','14:00','Координатная плоскость и движения','путешествия по клеточному полю'],
+    ['07.08','пт','18:00','Поиск закономерностей в числовых последовательностях'],
+    ['09.08','вс','14:00','Диаграммы, графики, инфографика','как читать и анализировать данные'],
+    ['13.08','чт','18:00','Кодирование информации','шифры Цезаря, XOR, Виженера'],
+    ['16.08','вс','14:00','Кодирование и декодирование','коды Хэмминга'],
+    ['21.08','пт','18:00','Системы счисления на пальцах','переливание, весы, взвешивания'],
+    ['23.08','вс','14:00','Знакомство с КуМиром','Робот и Чертёжник, простейшие команды'],
+    ['27.08','чт','18:00','Линейные алгоритмы в КуМире','последовательность команд'],
+    ['30.08','вс','14:00','Ветвление в КуМире','«если-то-иначе», обход препятствий'],
+    ['03.09','чт','18:00','Цикл «пока» в КуМире','до выполнения условия'],
+    ['06.09','вс','14:00','Цикл «n раз» в КуМире','заданное количество повторов'],
+    ['11.09','пт','18:00','Вложенные циклы','закрашивание клеток, узоры'],
+    ['13.09','вс','14:00','Решение алгоритмических задач в КуМире','без привязки к ОГЭ'],
+  ]},
+  'i-ege': {s:'Информатика', t:'ЛШ ЕГЭ', c:'i', lessons:[
+    ['23.07','чт','19:00','Python с нуля','калькулятор, «Угадай число»'],
+    ['26.07','вс','15:00','Условия в коде','бот для выбора фильма'],
+    ['31.07','пт','19:00','Циклы','ёлочка из звёздочек, счётчик дней'],
+    ['02.08','вс','15:00','Списки и кортежи','список дел'],
+    ['07.08','пт','19:00','Генераторы списков','шахматная доска одной строкой'],
+    ['09.08','вс','15:00','Словари','телеграм-бот на коленке'],
+    ['13.08','чт','19:00','Строки и трансформация','палиндромы, цензура'],
+    ['16.08','вс','15:00','Функции','модуль для работы с датами'],
+    ['21.08','пт','19:00','Рекурсия','фракталы, факториал'],
+    ['23.08','вс','15:00','Алгоритмы поиска','бинарный поиск, поиск в тексте'],
+    ['27.08','чт','19:00','Алгоритмы сортировки','сортируем музыку по популярности'],
+    ['30.08','вс','15:00','Работа с файлами','дневник, анализатор логов'],
+    ['03.09','чт','19:00','Модули и библиотеки','random, datetime'],
+    ['06.09','вс','15:00','Python + графика','turtle, лабиринт, анимация'],
+    ['11.09','пт','19:00','Мини-проект','чат-бот или «Крестики-нолики»'],
+    ['13.09','вс','15:00','Презентация проектов','квиз «Код-баттл»'],
+  ]},
+};
+
+/* ==================== ГЕНЕРАТОР ДАТ ==================== */
+const DOW_RU = ['','пн','вт','ср','чт','пт','сб','вс'];
+function pad(n){return String(n).padStart(2,'0')}
+function genDates(startISO, dows, count){
+  const out=[]; const d=new Date(startISO+'T00:00:00');
+  while(out.length<count){
+    let dow = d.getDay(); if(dow===0) dow=7;
+    if(dows.includes(dow)){
+      out.push({d:pad(d.getDate())+'.'+pad(d.getMonth()+1), w:DOW_RU[dow]});
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+
+/* ==================== СБОРКА КУРСОВ ==================== */
+const COURSES = [];
+for(const r of REC){
+  const dates = genDates(r.start, r.dow, 16);
+  const [tStart] = r.time.split('–');
+  COURSES.push({
+    id:r.id, subject:r.s, type:r.t, color:r.c, per:!!r.per,
+    days:r.dow.map(x=>DOW_RU[x]).join(' + '),
+    time:r.time,
+    period: dates[0].d + ' — ' + dates[15].d,
+    lessons: dates.map((x,i)=>({num:i+1, date:x.d, dow:x.w, time:tStart, title:'Урок '+(i+1)}))
+  });
+}
+for(const k of ['i-per','i-oge','i-ege']){
+  const c = INF[k];
+  const days = [...new Set(c.lessons.map(l=>l[1]))].join(' + ');
+  const times = [...new Set(c.lessons.map(l=>l[2]))].sort();
+  COURSES.push({
+    id:k, subject:c.s, type:c.t, color:c.c, per:!!c.per,
+    days:days,
+    time:times.join(' / '),
+    period: c.lessons[0][0]+' — '+c.lessons[15][0],
+    lessons: c.lessons.map((l,i)=>({num:i+1, date:l[0], dow:l[1], time:l[2], title:l[3], sub:l[4]||''}))
+  });
+}
+
+/* ==================== ТИПОВАЯ НЕДЕЛЯ ==================== */
+// Строки времени и мапа (день недели, время) → массив слотов
+const TIMES = ['11:00','12:15','13:30','14:45','18:00','19:00'];
+const SLOTS = {}; // key: dow-time
+function addSlot(dow, time, item){
+  const k = dow+'-'+time;
+  (SLOTS[k]=SLOTS[k]||[]).push(item);
+}
+// Мат/рус/физ — по dow из REC
+for(const r of REC){
+  const [tStart] = r.time.split('–');
+  for(const d of r.dow){
+    addSlot(d, tStart, {c:r.c, s:r.s, t:r.t, time:r.time, per:!!r.per});
+  }
+}
+// Информатика — «типовое» отображение по каждому уникальному (день, время)
+for(const k of ['i-per','i-oge','i-ege']){
+  const c = INF[k];
+  const seen = new Set();
+  for(const l of c.lessons){
+    const dow = DOW_RU.indexOf(l[1]);
+    const time = l[2];
+    const key = dow+'-'+time;
+    if(seen.has(key)) continue; seen.add(key);
+    addSlot(dow, time, {c:'i', s:'Информатика', t:c.t, time:time+'–'+addHour(time), per:!!c.per, floating:true});
+  }
+}
+function addHour(t){
+  const [h,m] = t.split(':').map(Number);
+  return pad(h+1)+':'+pad(m);
+}
+
+/* ==================== РЕНДЕР ==================== */
+function renderGrid(filter){
+  const tbody = document.getElementById('grid');
+  tbody.innerHTML = '';
+  for(const time of TIMES){
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+time+'</td>';
+    for(let dow=1; dow<=7; dow++){
+      const items = (SLOTS[dow+'-'+time]||[]).filter(x=>filter==='all'||x.c===filter);
+      const td = document.createElement('td');
+      if(items.length){
+        const par = document.createElement('div'); par.className='par';
+        for(const x of items){
+          const div = document.createElement('div');
+          div.className = 'slot '+x.c+(x.per?' per':'');
+          div.innerHTML = '<b>'+x.s+'</b>'+
+            '<span style="font-size:11.5px;opacity:0.85">'+x.t+'</span>'+
+            '<small>'+x.time+(x.floating?' · плавающий':'')+'</small>';
+          par.appendChild(div);
+        }
+        td.appendChild(par);
+      }
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+}
+
+function renderCourses(filter){
+  const wrap = document.getElementById('courses');
+  wrap.innerHTML = '';
+  const list = COURSES.filter(c => filter==='all' || c.color===filter);
+  // Сортировка: по предмету, потом Пересдача → ЛШ ОГЭ → ЛШ ЕГЭ
+  const typeOrder = {'Пересдача ОГЭ':0,'ЛШ ОГЭ':1,'ЛШ ЕГЭ':2};
+  const subjOrder = {'Математика':0,'Русский':1,'Физика':2,'Информатика':3};
+  list.sort((a,b)=>{
+    if(a.subject!==b.subject) return subjOrder[a.subject]-subjOrder[b.subject];
+    return typeOrder[a.type]-typeOrder[b.type];
+  });
+  for(const c of list){
+    const el = document.createElement('div');
+    el.className = 'course';
+    el.dataset.color = c.color;
+    let lessonsHTML = '<div class="lessons">';
+    for(const l of c.lessons){
+      lessonsHTML += '<div class="row">'+
+        '<div class="n">'+l.num+'</div>'+
+        '<div class="dt">'+l.date+', '+l.dow+'<em>'+l.time+'</em></div>'+
+        '<div class="tp">'+l.title+(l.sub?'<em>'+l.sub+'</em>':'')+'</div>'+
+      '</div>';
+    }
+    lessonsHTML += '</div>';
+    el.innerHTML =
+      '<div class="top"><span class="dot" style="background:var(--'+c.color+')"></span>'+
+        '<div><div class="subj">'+c.subject+'</div>'+
+        '<h3>'+c.type+'</h3></div></div>'+
+      '<div class="meta">'+
+        '<span>'+c.days+'</span>'+
+        '<span>'+c.time+'</span>'+
+        '<span>'+c.period+'</span>'+
+        '<span>16 уроков</span>'+
+      '</div>'+
+      '<button class="toggle">Показать все 16 уроков</button>'+
+      lessonsHTML;
+    el.querySelector('.toggle').addEventListener('click', ()=>{
+      el.classList.toggle('open');
+      el.querySelector('.toggle').textContent = el.classList.contains('open') ? 'Скрыть уроки' : 'Показать все 16 уроков';
+      // сохранить стрелку
+      if(el.classList.contains('open')){
+        el.querySelector('.toggle').innerHTML = 'Скрыть уроки';
+      }
+    });
+    wrap.appendChild(el);
+  }
+}
+
+/* ==================== ФИЛЬТР ==================== */
+let currentFilter = 'all';
+function apply(f){
+  currentFilter = f;
+  renderGrid(f);
+  renderCourses(f);
+  document.querySelectorAll('#filter .chip').forEach(el=>{
+    el.classList.toggle('active', el.dataset.f===f);
+  });
+}
+document.getElementById('filter').addEventListener('click', e=>{
+  const btn = e.target.closest('.chip');
+  if(!btn) return;
+  apply(btn.dataset.f);
+});
+
+/* инициализация */
+apply('all');
+</script>
+
+</body>
+</html>
